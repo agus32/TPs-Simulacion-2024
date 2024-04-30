@@ -4,7 +4,7 @@ Repositorio de trabajos prácticos para la materia de simulación de 4to año de
 
 ## *Integrantes del Equipo*
 - [Agustin Luzzini](https://github.com/agus32)
-- [Ignacio Roca](https://github.com/RodrigoMari)
+- [Rodrigo Mari](https://github.com/RodrigoMari)
 - [Ignacio Roca](https://github.com/RocaIgnacio1)
 - [Lautaro Teta Musa](https://github.com/Lautarotetamusa)
 - [Nazareno Necchi](https://github.com/nazanecchi)
