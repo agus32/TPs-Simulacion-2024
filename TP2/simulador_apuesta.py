@@ -1,7 +1,7 @@
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
-from apuestas import simular_martingala, simular_dalambert
+from apuestas import simular_martingala, simular_dalambert, simular_fibonacci
 
 #En este archivo ira la entrada de parametros y la visualizacion de los resultados
 
@@ -41,6 +41,22 @@ plt.title('Evolución del flujo de caja vs número de tiradas')
 for i in range(num_corridas):
     color = np.random.rand(3,)
     plt.plot(tiradas_dalambert[i], dinero_historico_dalambert[i], color=color, label=f'Corrida {i + 1}')
+
+plt.axhline(dinero_inicial, color='red', linestyle='--', label='Flujo de caja inicial')
+plt.legend()
+plt.show()
+
+
+# FIBONACCI
+tiradas_fibonacci, dinero_historico_fibonacci = simular_fibonacci(num_tiradas,num_corridas, dinero_inicial)
+plt.figure(figsize=(13, 6))
+plt.xlabel('n (número de tiradas)')
+plt.ylabel('cc (cantidad de capital)')
+plt.title('Evolución del flujo de caja vs número de tiradas')
+
+for i in range(num_corridas):
+    color = np.random.rand(3,)
+    plt.plot(tiradas_fibonacci[i], dinero_historico_fibonacci[i], color=color, label=f'Corrida {i + 1}')
 
 plt.axhline(dinero_inicial, color='red', linestyle='--', label='Flujo de caja inicial')
 plt.legend()
