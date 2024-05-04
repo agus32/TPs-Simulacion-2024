@@ -108,3 +108,30 @@ def simular_fibonacci(num_tiradas, num_corridas, dinero_inicial):
             tiradas[i].append(j)
     return tiradas, dinero_historico
 
+def simular_paroli(num_tiradas, num_corridas,dinero_inicial):
+    dinero_historico_paroli = [[] for _ in range(num_corridas + 1)]
+    tiradas_paroli = [[] for _ in range(num_corridas + 1)]
+
+    
+    for i in range (num_corridas+1):
+        auxiliar_paroli = 1
+        dinero_actual = dinero_inicial
+        apuesta = 1
+        for j in range(num_tiradas + 1):
+            if dinero_actual < apuesta:
+                break  # No hay dinero para seguir apostando
+            dinero_actual -= apuesta
+            valor = random.randint(0, 36)
+            if color_ruleta(valor) == 'rojo':# Ganó la apuesta, por ende duplica la apuesta
+                dinero_actual += apuesta*2
+                if auxiliar_paroli != 3: # Si gana 3 veces consecutivas vuelve a la apuesta inicial
+                    apuesta *= 2
+                    auxiliar_paroli += 1
+                else:
+                    auxiliar_paroli = 1
+
+            else:# Perdió la apuesta, entonces vuelve a la apuesta inicial
+                apuesta = 1
+            dinero_historico_paroli[i].append(dinero_actual)
+            tiradas_paroli[i].append(j)
+    return tiradas_paroli, dinero_historico_paroli
