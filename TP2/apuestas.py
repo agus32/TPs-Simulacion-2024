@@ -1,32 +1,39 @@
 import random
 from ruleta import color_ruleta
 
-def simular_martingala(num_tiradas, num_corridas,dinero_inicial):
-    dinero_historico = [[] for _ in range(num_corridas + 1)]
-    tiradas = [[] for _ in range(num_corridas + 1)]
+def simular_martingala(num_tiradas, num_corridas,dinero_inicial, capital_infinito):
+    dinero_historico = [[] for _ in range(num_corridas)]
+    tiradas = [[] for _ in range(num_corridas)]
+    frecuencia_historica = [[] for _ in range(num_corridas)]
+
 
     
-    for i in range (num_corridas+1):
+    for i in range (num_corridas):
         dinero_actual = dinero_inicial
         apuesta = 1
-        for j in range(num_tiradas + 1):
-            if dinero_actual < apuesta:
+        ganadas = 0
+        dinero_historico[i].append(dinero_inicial)
+        tiradas[i].append(0)
+        for j in range(1,num_tiradas + 1):
+            if dinero_actual < apuesta and not capital_infinito:
                 break  # No hay dinero para seguir apostando
             dinero_actual -= apuesta
             valor = random.randint(0, 36)
             if color_ruleta(valor) == 'rojo':# Ganó la apuesta
                 dinero_actual += apuesta*2
-                apuesta = 1  
+                apuesta = 1
+                ganadas += 1
             else:# Perdió la apuesta
                 apuesta *=2 
             dinero_historico[i].append(dinero_actual)
             tiradas[i].append(j)
-    return tiradas, dinero_historico
+            frecuencia_historica[i].append(ganadas/j)
+    return tiradas, dinero_historico, frecuencia_historica
 
 
 # Si perdes -> aumentas x fichas/dinero a tu apuesta.
 # Si ganas -> disminuis x fichas/dinero a tu apuesta. 
-def simular_dalambert(num_tiradas, num_corridas,dinero_inicial):
+def simular_dalambert(num_tiradas, num_corridas,dinero_inicial, capital_infinito):
     dinero_historico = [[] for _ in range(num_corridas + 1)]
     tiradas = [[] for _ in range(num_corridas + 1)]
 
@@ -36,7 +43,7 @@ def simular_dalambert(num_tiradas, num_corridas,dinero_inicial):
         dinero_actual = dinero_inicial
         apuesta = ficha
         for j in range(num_tiradas + 1):
-            if dinero_actual < apuesta:
+            if dinero_actual < apuesta and not capital_infinito:
                 break  # No hay dinero para seguir apostando
             
             dinero_actual -= apuesta
@@ -55,7 +62,7 @@ def simular_dalambert(num_tiradas, num_corridas,dinero_inicial):
 
 # Si perdes -> sumas el valor de tus dos últimas apuestas. 
 # Si ganas -> retrocedes dos posiciones en la serie (o te mantenes en 1).
-def simular_fibonacci(num_tiradas, num_corridas, dinero_inicial):
+def simular_fibonacci(num_tiradas, num_corridas, dinero_inicial, capital_infinito):
     dinero_historico = [[] for _ in range(num_corridas + 1)]
     apuestas_historico = [[] for _ in range(num_corridas + 1)]  # historial de apuestas
     tiradas = [[] for _ in range(num_corridas + 1)]
@@ -91,7 +98,7 @@ def simular_fibonacci(num_tiradas, num_corridas, dinero_inicial):
         j=2
         for j in range(num_tiradas + 1):
              
-            if dinero_actual < apuesta:
+            if dinero_actual < apuesta and not capital_infinito:
                 break  # No hay dinero para seguir apostando
             
             dinero_actual -= apuesta
@@ -108,7 +115,7 @@ def simular_fibonacci(num_tiradas, num_corridas, dinero_inicial):
             tiradas[i].append(j)
     return tiradas, dinero_historico
 
-def simular_paroli(num_tiradas, num_corridas,dinero_inicial):
+def simular_paroli(num_tiradas, num_corridas,dinero_inicial, capital_infinito):
     dinero_historico_paroli = [[] for _ in range(num_corridas + 1)]
     tiradas_paroli = [[] for _ in range(num_corridas + 1)]
 
@@ -118,7 +125,7 @@ def simular_paroli(num_tiradas, num_corridas,dinero_inicial):
         dinero_actual = dinero_inicial
         apuesta = 1
         for j in range(num_tiradas + 1):
-            if dinero_actual < apuesta:
+            if dinero_actual < apuesta and not capital_infinito:
                 break  # No hay dinero para seguir apostando
             dinero_actual -= apuesta
             valor = random.randint(0, 36)
