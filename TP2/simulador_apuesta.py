@@ -27,11 +27,11 @@ else:
 if(estrategia == "m"):
     tiradas, dinero_historico,frecuencia_historica = simular_martingala(num_tiradas,num_corridas, dinero_inicial, capital_infinito)
 elif(estrategia == "d"):
-    tiradas, dinero_historico = simular_dalambert(num_tiradas,num_corridas, dinero_inicial, capital_infinito)
+    tiradas, dinero_historico,frecuencia_historica = simular_dalambert(num_tiradas,num_corridas, dinero_inicial, capital_infinito)
 elif(estrategia == "f"):
-    tiradas, dinero_historico = simular_fibonacci(num_tiradas,num_corridas, dinero_inicial, capital_infinito)
+    tiradas, dinero_historico,frecuencia_historica = simular_fibonacci(num_tiradas,num_corridas, dinero_inicial, capital_infinito)
 elif(estrategia == "o"):
-    tiradas, dinero_historico = simular_paroli(num_tiradas,num_corridas, dinero_inicial, capital_infinito)
+    tiradas, dinero_historico,frecuencia_historica = simular_paroli(num_tiradas,num_corridas, dinero_inicial, capital_infinito)
 else:
     print("Estrategia no valida")
     sys.exit(1)
@@ -50,7 +50,7 @@ plt.axhline(dinero_inicial, color='red', linestyle='--', label='Flujo de caja in
 plt.legend()
 plt.show()
 
-#solo implementado en la martingala
+
 plt.figure(figsize=(13, 6))
 plt.xlabel('n (número de tiradas)')
 plt.ylabel('fr (frecuencia relativa)')
