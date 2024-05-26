@@ -1,0 +1,6 @@
+GLC:
+python cli.py -g glc -s 123482913 -m 2147483647 -a 1103515245 -c 12345 -n 10 -N 262144 -T bitmap
+
+
+
+

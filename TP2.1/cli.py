@@ -57,8 +57,8 @@ def main() -> int:
         USAGE()
         exit(1)
 
-    gen_name = get_arg("-g")
-    seed = int(get_arg("-s"))
+    gen_name = get_arg("-G")
+    seed = int(get_arg("-S"))
     N = int(get_arg("-N"))
     test_name = get_arg("-T")
 
