@@ -16,3 +16,14 @@
         -m: modulo
         -a: multiplicador
         -c: incremento
+
+## [Ejemplos](./examples.md)
+
+## Instalacion 
+`python -m venv .venv`
+`source .venv/bin/activate`
+`pip install -r requirements.txt`
+
+### Eliminar el entorno
+`deactivate`
+`rm -r .venv/`

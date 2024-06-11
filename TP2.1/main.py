@@ -1,88 +1,89 @@
-from PIL import Image
+import sys
+from generators import CuadradosMedios, GLCGenerator
+from tests import bit_map
 
-class CuadradosMedios():
-    def __init__(self, seed, n):
-        s = seed
-        for _ in range(n):
-            assert s > 0, f"La semilla no puede tener menos de {n} digitos"
-            s = s // 10 #Division truncando el resultado
+generators = {
+    "cm": CuadradosMedios,
+    "glc": GLCGenerator
+}
 
-        self.seed = seed
-        self.n = n
-        self.x = seed
+generators_args = {
+    "cm": ["-n"],
+    "glc": ["-m", "-c", "-a"] 
+}
 
-    def next(self) -> int:
-        next_x = self.x**2
+tests = {
+    "bitmap": bit_map
+}
 
-        digits = 0
-        while next_x > 0:
-            next_x = next_x // 10
-            digits += 1
+def USAGE():
+    print("""
+        python cli.py -G <generador> -S <seed> <...args> -N <int> -T <test> 
 
-        gap = (digits - self.n) // 2 #Cuantos digitos tenemos que sacar de cada lado
-        self.x **= 2
-        self.x = self.x % (10**(digits-gap)) #Sacamos los primeros gap digitos
-        self.x = self.x // 10**gap #Sacamos los ultimos gap digitos
-
-        return self.x % 2
-
-    def next_n(self, n) -> list[int]:
-        values = []
-        for _ in range(n):
-            values.append(self.next())
-        return values
+        -N: cantidad de números que vamos a generar
+        
+        -S: Semilla del generador
     
-class GLCGenerator():
-    def __init__(self, seed, m, c, a):
-        print(m, c, a)
-        assert m > 0, "El modulo debe ser > 0"
-        assert a < m, "El multiplicador debe ser menor al modulo"
-        assert a > 0, "El multiplicador debe ser > 0"
-        assert c < m, "El incremento debe ser menor al modulo"
-        assert c >= 0, "El incremento debe ser >= 0"
-        assert seed < m, "La semilla debe ser menor al modulo"
-        assert seed >= 0, "La semilla debe ser >= 0"
+        -T: Test a realizar
+              bitmap
 
-        self.seed = seed
-        self.x = seed
-        self.module = m
-        self.c = c
-        self.a = a
+        -G: Generador utilizado
 
-    def seed(self, seed):
-        self.seed = seed
+          cm: Cuadrados Medios
+              -n: precisión 
+          glc: Generador lineal congruencial
+              -m: modulo
+              -a: multiplicador
+              -c: incremento
+    """)
 
-    # incluye min, sin incluir max
-    def next(self) -> int:
-        self.x = (self.a*self.x + self.c) % self.module 
-        return self.x % 2
+def get_arg(arg: str):
+    try:
+        index = sys.argv.index(arg)
+    except ValueError:
+        print(f"No se encuentra el argumento {arg}")
+        USAGE()
+        exit(1)
 
-    def next_n(self, n) -> list[int]:
-        values = []
-        for _ in range(n):
-            values.append(self.next())
-        return values
+    if len(sys.argv) < index+1:
+        print(f"No se encuentra el argumento {arg}")
+        USAGE()
+        exit(1)
 
-def bit_map(values: list[int], width=512, heigth=512):
-    assert len(values) >= width*heigth, f"La lista de valores tiene que tener {width*heigth} de largo"
+    return sys.argv[index+1]
 
-    img = Image.new('RGB', (width, heigth), "black")
-    pixels = img.load()
+def main() -> int:
+    if len(sys.argv) < 8:
+        print("No hay suficientes argumentos")
+        USAGE()
+        exit(1)
+
+    gen_name = get_arg("-G")
+    seed = int(get_arg("-S"))
+    N = int(get_arg("-N"))
+    test_name = get_arg("-T")
+
+    if gen_name not in generators:
+        print(f"{gen_name} no es un generador válido")
+        USAGE()
+        exit(1)
+
+    if test_name not in tests:
+        print(f"{test_name} no es un test válido")
+        USAGE()
+        exit(1)
+
+    args = {}
+    for arg_name in generators_args[gen_name]:
+        args[arg_name.replace('-', '')] = int(get_arg(arg_name))
+
+    generator_class = generators[gen_name]
+    g = generator_class(seed, **args)
+    values = g.next_n(N)
+
+    tests[test_name](values)
     
-    k = 0
-    for i in range(img.size[0]):    # For every pixel:
-        for j in range(img.size[1]):
-            color = int(values[k] * 256)
-            pixels[i, j] = (color, color, color) # Set the colour accordingly
-            k += 1
-
-    img.show()
+    return 0
 
 if __name__ == "__main__":
-    glc = GLCGenerator(10, 2**31-1, 12345, 1103515245)
-    values = glc.next_n(1048*1048)
-    bit_map(values, 1048, 1048)
-
-    #cm = CuadradosMedios(44504050138512839321, 20)
-    #values = cm.next_n(512*512)
-    #bit_map(values, 512, 512)
+    main()
