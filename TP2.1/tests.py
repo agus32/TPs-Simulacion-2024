@@ -1,9 +1,7 @@
 import math
 import scipy.stats as stats
 import matplotlib.pyplot as plt
-from PIL.Image import Image
-
-from generators import CuadradosMedios, GLCGenerator
+from PIL import Image
 
 def bit_map(values: list[int], width=512, heigth=512):
     assert len(values) >= width*heigth, f"La lista de valores tiene que tener {width*heigth} de largo"
@@ -20,11 +18,90 @@ def bit_map(values: list[int], width=512, heigth=512):
 
     img.show()
 
-def monobit_test(values):
+def media_test(values: list[float]):
+    sequence_length = len(values)
+    media = sum(values) / sequence_length
+    
+    # Media esperada para números en el intervalo [0, 1]
+    media_esperada = 0.5
+    
+    # Calcular el intervalo de confianza
+    alfa = 0.05  # nivel de significancia para 95% de confianza
+    z = stats.norm.ppf(1 - alfa / 2)
+    std_error = math.sqrt((1/12) / sequence_length)  # Desviación estándar de la media esperada
+    
+    lower_bound = media_esperada - z * std_error
+    upper_bound = media_esperada + z * std_error
+    
+    result = "passed" if lower_bound <= media <= upper_bound else "failed"
+    
+    plt.figure(figsize=(10, 6))
+    
+    plt.hist(values, bins=50, alpha=0.75, label='Generated Numbers')
+    plt.axvline(media, color='r', linestyle='--', label='Calculated Media')
+    plt.axvline(media_esperada, color='g', linestyle='-', label='Expected Media')
+    
+    # Anotaciones
+    plt.xlabel('Generated Numbers')
+    plt.ylabel('Frequency')
+    plt.title(f'Media Test: {result} (Media: {media:.5f})')
+    plt.legend()
+    plt.grid(True)
+    
+    plt.show()
+    
+    print(f"Media esperada: {media_esperada}")
+    print(f"Media calculada: {media}")
+    print(f"Intervalo de confianza: [{lower_bound}, {upper_bound}]")
+
+def varianza_test(values: list[float]):
+    media = sum(values) / len(values)
+    sequence_length = len(values)
+    
+    varianza = sum((x - media) ** 2 for x in values) / (sequence_length - 1)
+    
+    varianza_esperada = 1 / 12
+
+    # Calcular el intervalo de confianza
+    alfa = 0.05  # nivel de significancia para 95% de confianza
+    chi2_lower = stats.chi2.ppf(alfa / 2, df=sequence_length - 1)
+    chi2_upper = stats.chi2.ppf(1 - alfa / 2, df=sequence_length - 1)
+    
+    lower_bound = (sequence_length - 1) * varianza_esperada / chi2_upper
+    upper_bound = (sequence_length - 1) * varianza_esperada / chi2_lower
+    
+    # Determinar si el generador pasa la prueba
+    result = "passed" if lower_bound <= varianza <= upper_bound else "failed"
+    
+    # Graficar los resultados
+    plt.figure(figsize=(10, 6))
+    
+    plt.hist(values, bins=50, alpha=0.75, label='Generated Numbers')
+    plt.axvline(media, color='r', linestyle='--', label='Media')
+    
+    # Anotaciones
+    plt.xlabel('Generated Numbers')
+    plt.ylabel('Frequency')
+    plt.title(f'Varianza Test: {result} (Varianza: {varianza:.5f}, Media: {media:.5f})')
+    plt.legend()
+    plt.grid(True)
+    
+    plt.show()
+    
+    print(f"Varianza esperada: {varianza_esperada}")
+    print(f"Varianza calculada: {varianza}")
+    print(f"Intervalo de confianza: [{lower_bound}, {upper_bound}]")
+    
+    return varianza
+
+def monobit(values):
     bits = []
     for v in values:
         bits.append(1 if v >= 0.5 else 0)
 
+    # Generate a sequence of bits
+    
+    # Count the number of 1's in the sequence
     ones_count = sum(bits)
 
     bits_count = len(bits)
@@ -65,4 +142,4 @@ def monobit_test(values):
 if __name__ == "__main__":
     glc = GLCGenerator(10, 2**31-1, 12345, 1103515245)
     values = glc.next_n(1000)
-    monobit_test(values)
+    monobit(values)

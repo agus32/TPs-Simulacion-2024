@@ -1,19 +1,25 @@
 import sys
+import random
 from generators import CuadradosMedios, GLCGenerator
-from tests import bit_map
+from tests import bit_map, monobit, media_test, varianza_test
 
 generators = {
     "cm": CuadradosMedios,
-    "glc": GLCGenerator
+    "glc": GLCGenerator,
+    "lib": random.Random
 }
 
 generators_args = {
     "cm": ["-n"],
-    "glc": ["-m", "-c", "-a"] 
+    "glc": ["-m", "-c", "-a"],
+    "lib": []
 }
 
 tests = {
-    "bitmap": bit_map
+    "bitmap": bit_map,
+    "monobit": monobit,
+    "media": media_test,
+    "varianza": varianza_test
 }
 
 def USAGE():
@@ -35,6 +41,7 @@ def USAGE():
               -m: modulo
               -a: multiplicador
               -c: incremento
+          lib: Libreria random de python
     """)
 
 def get_arg(arg: str):
@@ -79,7 +86,11 @@ def main() -> int:
 
     generator_class = generators[gen_name]
     g = generator_class(seed, **args)
-    values = g.next_n(N)
+    g.seed(seed)
+
+    values = []
+    for _ in range(N):
+        values.append(g.random())
 
     tests[test_name](values)
     
