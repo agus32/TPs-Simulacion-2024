@@ -5,27 +5,29 @@ class CuadradosMedios():
             assert s > 0, f"La semilla no puede tener menos de {n} digitos"
             s = s // 10 #Division truncando el resultado
 
-        self.seed = seed
         self.n = n
         self.x = seed
 
-    def seed(self, seed):
-        self.seed = seed
+    def _get_count_digits(self, x: int) -> int:
+        digits = 0
+        while x > 0:
+            x = x // 10 #Division truncando el resultado
+            digits += 1
+        return digits
 
     def random(self) -> float:
         next_x = self.x**2
 
-        digits = 0
-        while next_x > 0:
-            next_x = next_x // 10
-            digits += 1
+        digits = self._get_count_digits(next_x)
 
         gap = (digits - self.n) // 2 #Cuantos digitos tenemos que sacar de cada lado
         self.x **= 2
         self.x = self.x % (10**(digits-gap)) #Sacamos los primeros gap digitos
         self.x = self.x // 10**gap #Sacamos los ultimos gap digitos
 
-        max_value = 10**(self.n+1) - 1
+        digits = self._get_count_digits(self.x)
+
+        max_value = 10**digits - 1
         return self.x / max_value
     
 class GLCGenerator():
@@ -38,14 +40,10 @@ class GLCGenerator():
         assert seed < m, "La semilla debe ser menor al modulo"
         assert seed >= 0, "La semilla debe ser >= 0"
 
-        self.seed = seed
         self.x = seed
         self.module = m
         self.c = c
         self.a = a
-
-    def seed(self, seed):
-        self.seed = seed
 
     def random(self) -> float:
         self.x = (self.a*self.x + self.c) % self.module 

@@ -7,6 +7,9 @@
 
 -T: Test a realizar
     bitmap
+    monobit
+    media
+    varianza
 
 -G: Generador utilizado
 
@@ -16,6 +19,7 @@
         -m: modulo
         -a: multiplicador
         -c: incremento
+    lib: Libreria random de python
 
 ## [Ejemplos](./examples.md)
 

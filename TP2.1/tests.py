@@ -10,10 +10,10 @@ def bit_map(values: list[int], width=512, heigth=512):
     pixels = img.load()
     
     k = 0
-    for i in range(img.size[0]):    # For every pixel:
+    for i in range(img.size[0]):    
         for j in range(img.size[1]):
             color = int(values[k] * 256)
-            pixels[i, j] = (color, color, color) # Set the colour accordingly
+            pixels[i, j] = (color, color, color) 
             k += 1
 
     img.show()

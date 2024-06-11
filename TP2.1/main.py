@@ -32,6 +32,9 @@ def USAGE():
     
         -T: Test a realizar
               bitmap
+              monobit
+              media
+              varianza
 
         -G: Generador utilizado
 
@@ -86,7 +89,6 @@ def main() -> int:
 
     generator_class = generators[gen_name]
     g = generator_class(seed, **args)
-    g.seed(seed)
 
     values = []
     for _ in range(N):
