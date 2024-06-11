@@ -3,7 +3,7 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 from PIL import Image
 
-def bit_map(values: list[int], width=512, heigth=512):
+def bit_map(values: list[int], width=512, heigth=512, show_plot=True):
     assert len(values) >= width*heigth, f"La lista de valores tiene que tener {width*heigth} de largo"
 
     img = Image.new('RGB', (width, heigth), "black")
@@ -15,10 +15,13 @@ def bit_map(values: list[int], width=512, heigth=512):
             color = int(values[k] * 256)
             pixels[i, j] = (color, color, color) 
             k += 1
+    
+    if show_plot:
+        img.show()
 
-    img.show()
+    return img.save
 
-def media_test(values: list[float]):
+def media_test(values: list[float], show_plot=True):
     sequence_length = len(values)
     media = sum(values) / sequence_length
     
@@ -48,13 +51,11 @@ def media_test(values: list[float]):
     plt.legend()
     plt.grid(True)
     
-    plt.show()
-    
-    print(f"Media esperada: {media_esperada}")
-    print(f"Media calculada: {media}")
-    print(f"Intervalo de confianza: [{lower_bound}, {upper_bound}]")
+    if show_plot:
+        plt.show()
+    return plt.savefig
 
-def varianza_test(values: list[float]):
+def varianza_test(values: list[float], show_plot=True):
     media = sum(values) / len(values)
     sequence_length = len(values)
     
@@ -85,28 +86,19 @@ def varianza_test(values: list[float]):
     plt.title(f'Varianza Test: {result} (Varianza: {varianza:.5f}, Media: {media:.5f})')
     plt.legend()
     plt.grid(True)
-    
-    plt.show()
-    
-    print(f"Varianza esperada: {varianza_esperada}")
-    print(f"Varianza calculada: {varianza}")
-    print(f"Intervalo de confianza: [{lower_bound}, {upper_bound}]")
-    
-    return varianza
+   
+    if show_plot:
+        plt.show()
+    return plt.savefig
 
-def monobit(values):
+def monobit(values, show_plot=True):
     bits = []
     for v in values:
         bits.append(1 if v >= 0.5 else 0)
 
-    # Generate a sequence of bits
-    
-    # Count the number of 1's in the sequence
     ones_count = sum(bits)
-
     bits_count = len(bits)
     
-    # Calculate the test statisti
     zeroes_count = bits_count - ones_count
     S_n = ones_count - zeroes_count
     V = S_n / math.sqrt(bits_count)
@@ -134,12 +126,7 @@ def monobit(values):
     plt.title(f'Monobit Test: {result} (p-value: {p_value:.5f}, V: {V:.5f})')
     plt.legend()
     plt.grid(True)
-    
-    plt.show()
-    
-    return p_value
-
-if __name__ == "__main__":
-    glc = GLCGenerator(10, 2**31-1, 12345, 1103515245)
-    values = glc.next_n(1000)
-    monobit(values)
+   
+    if show_plot:
+        plt.show()
+    return plt.savefig

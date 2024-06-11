@@ -24,7 +24,11 @@ tests = {
 
 def USAGE():
     print("""
-        python cli.py -G <generador> -S <seed> <...args> -N <int> -T <test> 
+        python cli.py -G <generador> -S <seed> <...args> -N <int> -T <test>
+
+        Parametros opcionales:
+          --save-image
+            Guarda el resultado del test en results/ con un nombre adecuado
 
         -N: cantidad de números que vamos a generar
         
@@ -93,6 +97,11 @@ def main() -> int:
     values = []
     for _ in range(N):
         values.append(g.random())
+
+    if "--save-image" in sys.argv:
+        save_func = tests[test_name](values, show_plot=False)
+        save_func(f"results/{gen_name}_{test_name}.png", format="png")
+        return 0
 
     tests[test_name](values)
     

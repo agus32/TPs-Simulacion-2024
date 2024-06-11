@@ -1,5 +1,10 @@
 ## Uso
-`python cli.py -G <generador> -S <seed> <...args> -N <int> -T <test>`
+```text
+python cli.py -G <generador> -S <seed> <...args> -N <int> -T <test>
+
+Parametros opcionales:
+    --save-image
+        Guarda el resultado del test en results/ con un nombre adecuado
 
 -N: cantidad de números que vamos a generar
 
@@ -20,6 +25,7 @@
         -a: multiplicador
         -c: incremento
     lib: Libreria random de python
+```
 
 ## [Ejemplos](./examples.md)
 

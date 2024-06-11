@@ -18,6 +18,5 @@
 
 ## Libreria random de python
 
-
 ### Bit map
 `python main.py -G lib -S 12398149 -N 262144 -T bitmap`
