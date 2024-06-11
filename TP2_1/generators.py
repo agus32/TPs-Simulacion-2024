@@ -43,9 +43,13 @@ class GLCGenerator():
         self.x = seed
         self.module = m
         self.c = c
-        self.a = a
+        self.a = a  
+    
+    
+    def seed(self, seed):
+        self.seed = seed
 
-    def random(self) -> float:
+    def next(self) -> float:
         self.x = (self.a*self.x + self.c) % self.module 
         return self.x / self.module
 
