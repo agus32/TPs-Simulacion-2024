@@ -5,6 +5,55 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from TP2_1.generators import GLCGenerator
 
+glc = GLCGenerator(10, 2**31-1, 12345, 1103515245)
+
+'''
+    Distribucion Hipergeometrica
+    Hay N elementos de clase 1 o clase 2. 
+    Np son la cantidad de elementos de la clase 1.
+    Nq son la cantidad de elementos de la clase 2.
+    Si de la poblacion N se toman n elementos sin reponer, el numero de elementos x
+    de la clase 1/2  tendra una distribucion hipergeometrica.
+    
+    Parametros:
+    N: poblacion
+    n: muestra
+    p: probabilidad de que sea de clase 1
+    x: inicia en 0
+    
+'''
+def generador_hipergeometrica(N, n, p, glc, num_experimentos=1000):
+    values = []
+    for _ in range(num_experimentos):
+        x = 0
+        N_actual = N
+        p_actual = p
+        for _ in range(n):
+            r = glc.next()
+            if r <= p_actual / N_actual:
+                x += 1
+                p_actual -= 1
+            N_actual -= 1
+        values.append(x)
+    return values
+
+# parametros
+N = 1000   # tamaño de la poblacion inicial
+n = 50     # tamaño de la muestra
+p = 500    # numero de exitos en la poblacion
+num_experimentos = 1000
+
+valores_hipergeometricos = generador_hipergeometrica(N, n, p, glc, num_experimentos)
+
+# Graficar distribución hipergeométrica 
+plt.hist(valores_hipergeometricos, bins=50, density=True, alpha=0.6, color='r', label='GLC Generado')
+plt.title('Distribución Hipergeométrica')
+plt.xlabel('Valor')
+plt.ylabel('Frecuencia')
+plt.legend()
+plt.show()
+
+exit()
 
 '''
     Distribucion Uniforme
@@ -15,12 +64,8 @@ from TP2_1.generators import GLCGenerator
     x: cantidad de valores uniformes a generar.
     
     Paso 2: generar r con el GLCGenerator. 
-    r: valor aleatorio que varia entre 0 y 1
-    
+    r: valor aleatorio que varia entre 0 y 1  
 '''
-glc = GLCGenerator(10, 2**31-1, 12345, 1103515245)
-
-
 def distribucion_uniforme(a, b, x):
     values = []
     for _ in range(x):
@@ -36,6 +81,8 @@ plt.xlabel('Valor')
 plt.ylabel('Frecuencia')
 plt.show()
 
+
+
 '''
     Distribucion Exponencial
     Explicacion.
@@ -45,7 +92,6 @@ plt.show()
     
     Paso 2: generar r con el GLCGenerator. 
     r: valor aleatorio que varia entre 0 y 1
-    
 '''
 def distribucion_exponencial(lambd, x):
     values = []
@@ -63,6 +109,8 @@ plt.xlabel('Valor')
 plt.ylabel('Frecuencia')
 plt.show()
 
+
+
 '''
     Distribucion Gamma
     Explicacion: surge de la suma de k variables aleatorias exponenciales.
@@ -76,8 +124,7 @@ plt.show()
     Paso 2: generar r con el GLCGenerator. 
     r: valor aleatorio que varia entre 0 y 1
     
-    Metodo: -1/lamda * sumatoria entre 1 a k de log ri. Donde r es una variable de la distribucion exponencial. 
-    
+    Metodo: -1/lamda * sumatoria entre 1 a k de log ri. Donde r es una variable de la distribucion exponencial.  
 '''
 def distribucion_gamma(k, theta, x):
     values = []
@@ -99,6 +146,8 @@ plt.xlabel('Valor')
 plt.ylabel('Frecuencia')
 plt.show()
 
+
+
 '''
     Distribucion Normal
     
@@ -112,7 +161,6 @@ plt.show()
     r: valor aleatorio que varia entre 0 y 1
     
     Metodo: 
-    
 '''
 def generador_normal(media, desvio, K, x):
     values = []
@@ -138,4 +186,46 @@ plt.hist(valores_normales, bins=50, density=True, alpha=0.6, color='b')
 plt.title('Distribución Normal Generada por GLC')
 plt.xlabel('Valor')
 plt.ylabel('Frecuencia')
+plt.show()
+ 
+'''
+    Distribucion Binomial
+    
+    Paso 1: elegir n, p y x0
+    n: numero de ensayos
+    p: probabilidad de exito
+    x0: inicia en 0
+        
+    Paso 2: generar r con el GLCGenerator. 
+    r: valor aleatorio que varia entre 0 y 1
+    
+    Metodo: 
+    xi = xi-1 + 1     si ri <= p
+    xi = xi-1         si ri > p
+'''
+def generador_binomial(n, p):
+    values = []
+    for _ in range(num_experimentos):
+        x = 0
+        for _ in range(n):
+            r = glc.next()
+            if r <= p:
+                x += 1
+        values.append(x)
+
+    return values
+
+n = 1000  # numero de ensayos
+p = 0.5   # probabilidad de exito
+x = 0     # valor inicial
+num_experimentos = 5
+
+valores_binomiales = generador_binomial(n, p)
+
+# Grafica distribucion Binomial
+plt.hist(valores_binomiales, bins=30, density=True, alpha=0.6, color='b', label='GLC Generado')
+plt.title('Distribucion Binomial')
+plt.xlabel('Número de éxitos')
+plt.ylabel('Frecuencia relativa')
+plt.legend()
 plt.show()
