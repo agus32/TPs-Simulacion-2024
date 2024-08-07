@@ -20,10 +20,20 @@ if(float(sys.argv[2]) <= 0.0 or float(sys.argv[2]) > 1.25):
 mu = 1.0  # Tasa de servicio
 lambda_ = factor_utilizacion * mu  # Tasa de arribo ajustada
 
+# Valores teóricos
+L = lambda_ / (mu - lambda_)
+L_q = (lambda_ ** 2) / (mu * (mu - lambda_))
+W = 1 / (mu - lambda_)
+W_q = lambda_ / (mu * (mu - lambda_))
+rho = lambda_ / mu
+
 # Función para simular el sistema M/M/1
 def simulate_mm1(lambda_, mu, simulation_time, rng):
     arrival_times = np.cumsum(rng.exponential(1 / lambda_, int(lambda_ * simulation_time * 2)))
     service_times = rng.exponential(1 / mu, int(lambda_ * simulation_time * 2))
+
+    print(f"Arrival times: {arrival_times}")
+    print(f"Service times: {service_times}")
     
     # Inicialización de variables
     clock = 0.0
@@ -97,9 +107,12 @@ for _ in range(num_corridas):
 
 # Graficar los resultados
 metrics = ['avg_num_in_system', 'avg_num_in_queue', 'avg_time_in_system', 'avg_time_in_queue', 'utilization']
-for metric in metrics:
+theoretical_values = [L, L_q, W, W_q, rho]
+
+for metric, theoretical_value in zip(metrics, theoretical_values):
     values = [result[metric] for result in results]
     plt.plot(range(1, num_corridas + 1), values, label=f'λ = {lambda_:.2f}')
+    plt.axhline(y=theoretical_value, color='r', linestyle='--', label='Teórico')
     plt.xlabel('Corrida')
     plt.ylabel(metric.replace('_', ' ').capitalize())
     plt.title(f'Histórico de {metric.replace("_", " ").capitalize()}')
