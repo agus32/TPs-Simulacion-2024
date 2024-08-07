@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy import var
 
-
 if len(sys.argv) != 7 or sys.argv[1] != "-c" or sys.argv[3] != "-n" or sys.argv[5] != "-e" or  int(sys.argv[6]) not in range(37) or int(sys.argv[4])>10000:
     print("Entrada incorrecta: python simulacion_ruleta.py -c <num_tiradas> -n <num_corridas> -e <num_elegido>")
     sys.exit(1)
@@ -19,7 +18,6 @@ frec_relativa = [[]for _ in range(num_corridas + 1)]
 promedio = [[]for _ in range(num_corridas + 1)]
 desvio = [[]for _ in range(num_corridas + 1)]
 varianza = [[]for _ in range(num_corridas + 1)]
-
 
 for i in range(num_corridas+1):
     sumador = 0
@@ -43,8 +41,6 @@ promedio_teorico_esperado = sum(range(37))/37
 frecuencia_relativa_esperada = 1/37 * num_tiradas
 varianza_esperada = var(range(37))
 desvio_teorico_esperado = np.std(range(37))
-
-
 
 def graficaFrecuenciaRelativa():
     plt.figure(figsize=(13, 6))
