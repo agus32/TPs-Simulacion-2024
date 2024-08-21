@@ -5,13 +5,13 @@ INF = 1.0e30
 max_time = 360
 
 mean_interdemand = 0.8
-s = 3   # Cantidad en la que se realiza pedido
-S = 10  # Capacidad del inventario
+s = 2   # Cantidad en la que se realiza pedido
+S = 20  # Capacidad del inventario
 
-setup_cost = 3      # k
-shortage_cost = 10  # p
-holding_cost = 5    # h
-unit_cost = 3       # i
+setup_cost = 2      # k
+shortage_cost = 40  # p
+holding_cost = 2    # h
+unit_cost = 1       # i
 
 inv_level = 10
 sim_time = 0.0
