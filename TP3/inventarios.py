@@ -2,13 +2,13 @@ import random
 import matplotlib.pyplot as plt
 
 INF = 1.0e30
-max_time = 36
+max_time = 360
 
 mean_interdemand = 0.8
-s = 7   # Cantidad en la que se realiza pedido
+s = 3   # Cantidad en la que se realiza pedido
 S = 10  # Capacidad del inventario
 
-setup_cost = 7      # k
+setup_cost = 3      # k
 shortage_cost = 10  # p
 holding_cost = 5    # h
 unit_cost = 3       # i
@@ -22,10 +22,16 @@ holding_costs: list[float] = [0]    # I+
 unit_costs: list[float] = [0]       # iZ
 total_costs: list[float] = [0]      # C
 
-I_plus = [max(inv_level, 0)]
-I_minus = [max(-inv_level, 0)]
+avg_holding_costs: list[float] = [0]    # I+
+avg_shortage_costs: list[float] = [0]
+avg_unit_costs: list[float] = [0]
+avg_total_costs: list[float] = [0]
+
+I_plus: list[float] = [max(inv_level, 0)]
+I_minus: list[float] = [max(-inv_level, 0)]
 inv_levels = [inv_level]
 times = [0.0]
+costs_times = [0.0]
 
 time_next_event: dict[str, float] = {
     "demand": random.expovariate(mean_interdemand),
@@ -33,6 +39,28 @@ time_next_event: dict[str, float] = {
     "evaluation": 1
 }
 
+def reset_simulation():
+    global sim_time, costs_times, amount, shortages_costs, holding_costs, unit_costs, total_costs, I_plus, I_minus, inv_levels, times, time_next_event
+    inv_level = 10
+    sim_time = 0.0
+    amount = 0  # Cantidad a pedir (Z)
+
+    shortages_costs = [0]  # I-
+    holding_costs = [0]    # I+
+    unit_costs = [0]       # iZ
+    total_costs = [0]      # C
+
+    I_plus = [max(inv_level, 0)]
+    I_minus = [max(-inv_level, 0)]
+    inv_levels = [inv_level]
+    times = [0.0]
+    costs_times = [0.0]
+
+    time_next_event = {
+        "demand": random.expovariate(mean_interdemand),
+        "order_arrival": INF,
+        "evaluation": 1
+    }
 
 def random_empiric():
     r = random.random()
@@ -94,15 +122,22 @@ def get_next_event_type() -> str:
 
 def update_prom_values():
     unit_costs.append(amount * unit_cost)
-    i_plus = I_plus[len(I_plus) - 1]
-    i_minus = I_minus[len(I_minus) - 1]
+    i_plus  = max(inv_level, 0)
+    i_minus = max(-inv_level, 0)
 
     holding_costs.append(i_plus * holding_cost)
     shortages_costs.append(i_minus * shortage_cost)
     total_costs.append(amount * unit_cost + i_plus * holding_cost + i_minus * shortage_cost)
+    costs_times.append(sim_time)
+
+    # Average costs
+    avg_holding_costs.append(sum(holding_costs) / len(holding_costs))
+    avg_shortage_costs.append(sum(shortages_costs) / len(shortages_costs))
+    avg_unit_costs.append(sum(unit_costs) / len(unit_costs))
+    avg_total_costs.append(sum(total_costs) / len(total_costs))
 
 
-def graph_inventory():
+def graph_inventory(file_name=None):
     plt.plot(times, inv_levels, marker=',', label='Inv. level')
     plt.plot([i+0.1 for i in times], I_plus, linestyle=':', marker=',', color='r', label='I+')
     plt.plot([i+0.1 for i in times], I_minus, marker=',', color='g', label='I-')
@@ -112,29 +147,53 @@ def graph_inventory():
     plt.ylabel('Inventario')
     plt.grid(True)
     plt.legend()
-    plt.show()
+    if file_name:
+        plt.savefig(f"results/{file_name}", format="png")
+    else:
+        plt.show()
+
+def graph_costs(file_name=None):
+    fig, axs = plt.subplots(2, 2, figsize=(12, 8))
+
+    axs[0, 0].plot(costs_times, total_costs, color='b', linestyle='--')
+    axs[0, 0].plot(costs_times, avg_total_costs, color='r', linestyle='-', label='Average')
+    axs[0, 0].set_title(f'Avg. Total cost = {calc_prom(total_costs, sim_time):.2f}')
+    axs[0, 0].set_ylabel('Total Cost')
+    axs[0, 0].grid(True)
+    axs[0, 0].legend()
+
+    axs[0, 1].plot(costs_times, holding_costs, color='r', linestyle='--', label='Holding cost')
+    axs[0, 1].plot(costs_times, avg_holding_costs, color='b', linestyle='-', label='Average')
+    axs[0, 1].set_title(f'Avg. Holding cost = {calc_prom(holding_costs, sim_time):.2f}')
+    axs[0, 1].set_ylabel('Holding Cost')
+    axs[0, 1].grid(True)
+    axs[0, 1].legend()
+
+    axs[1, 0].plot(costs_times, shortages_costs, color='g', linestyle='--')
+    axs[1, 0].plot(costs_times, avg_shortage_costs, color='b', linestyle='-', label='Average')
+    axs[1, 0].set_title(f'Avg. Shortage cost = {sum(shortages_costs)/len(shortages_costs):.2f}')
+    axs[1, 0].set_ylabel('Shortage Cost')
+    axs[1, 0].set_xlabel('Tiempo (Meses)')
+    axs[1, 0].grid(True)
+    axs[1, 0].legend()
+
+    axs[1, 1].plot(costs_times, unit_costs, color='orange', linestyle='--')
+    axs[1, 1].plot(costs_times, avg_unit_costs, color='b', linestyle='-', label='Average')
+    axs[1, 1].set_title(f'Avg. Unit cost = {sum(unit_costs)/len(unit_costs):.2f}')
+    axs[1, 1].set_ylabel('Unit Cost')
+    axs[1, 1].set_xlabel('Tiempo (Meses)')
+    axs[1, 1].grid(True)
+    axs[1, 1].legend()
+
+    fig.suptitle('Costos vs Tiempo', fontsize=16)
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    if file_name:
+        plt.savefig(f"results/{file_name}", format="png")
+    else:
+        plt.show()
 
 
-def graph_costs():
-    plt.plot(total_costs, color='b', linestyle='--',
-             label=f'Avg. Total cost = {calc_prom(total_costs, sim_time):.2f}')
-    plt.plot(holding_costs, color='r', linestyle='--',
-             label=f'Avg. Holding cost = {calc_prom(holding_costs, sim_time):.2f}')
-    plt.plot(shortages_costs, color='g', linestyle='--',
-             label=f'Avg. Shortage cost = {calc_prom(shortages_costs, sim_time):.2f}')
-    plt.plot(unit_costs, color='orange', linestyle='--',
-             label=f'Avg. Unit cost = {calc_prom(unit_costs, sim_time):.2f}')
-    # plt.axhline(y=setup_cost, color='blue', label=f'Setup cost = {setup_cost:.2f}')
-
-    plt.title('Costos vs Tiempo')
-    plt.xlabel('Tiempo (Meses)')
-    plt.ylabel('Costos')
-    plt.grid(True)
-    plt.legend()
-    plt.show()
-
-
-def calc_prom(values: list[float], n: int):
+def calc_prom(values: list[float], n: float):
     prev = values[0]
     sum = 0.0
     for level in values:
@@ -142,8 +201,7 @@ def calc_prom(values: list[float], n: int):
             sum += level
             prev = level
 
-    return sum / n
-
+    return sum / int(n)
 
 def main():
     global sim_time
@@ -151,6 +209,7 @@ def main():
     while sim_time < max_time:
         next_event = get_next_event_type()
 
+        update_prom_values()
         if next_event == "demand":
             sim_time = time_next_event["demand"]
             update_graph_values()
@@ -163,12 +222,14 @@ def main():
             sim_time = time_next_event["evaluation"]
             evaluation()
         update_graph_values()
-        update_prom_values()
-
-        print(sim_time)
-
 
 if __name__ == "__main__":
-    main()
-    graph_inventory()
-    graph_costs()
+    save_fig = True
+    max_simulations = 1
+    for i in range(max_simulations): 
+        main()
+        #file_name = f"{i}_s{s}_S{S}_lambda{mean_interdemand}_inventory.png" 
+        #graph_inventory()
+        graph_costs()
+        plt.clf()
+        reset_simulation()
