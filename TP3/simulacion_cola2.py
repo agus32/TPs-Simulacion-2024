@@ -95,16 +95,16 @@ def graficas_mm1(lambda_, mu, tiempo_simulacion, corridas, n=3, tamaño_cola=10)
 
     # Valores teóricos
     rho = lambda_ / mu
-    L_teorico = lambda_ / (mu - lambda_)
-    Lq_teorico = (lambda_**2) / (mu * (mu - lambda_))
-    W_teorico = 1 / (mu - lambda_)
-    Wq_teorico = lambda_ / (mu * (mu - lambda_))
+    L_teorico = float('inf') if rho == 1 else rho / (1 - rho)
+    Lq_teorico = (lambda_**2) / (mu * (mu - lambda_)) if rho < 1 else float('inf')
+    W_teorico = 1 / (mu - lambda_) if rho < 1 else float('inf')
+    Wq_teorico = lambda_ / (mu * (mu - lambda_)) if rho < 1 else float('inf')
     
     # Probabilidad teórica de encontrar n clientes en cola
-    Pn_teorico = (1 - rho) * (rho ** n)
+    Pn_teorico = (1 - rho) * (rho ** n) 
     
     # Probabilidad teórica de denegación de servicio (cola finita de tamaño 20)
-    P_denegacion_teorico = (rho ** tamaño_cola) * (1 - rho) / (1 - rho ** (tamaño_cola + 1))
+    P_denegacion_teorico = (rho ** tamaño_cola) * (1 - rho) / (1 - rho ** (tamaño_cola + 1)) if rho < 1 else 1
 
     # Promedios simulados
     promedios_simulados = {key: sum(val) / len(val) for key, val in resultados_corridas.items()}
@@ -175,4 +175,4 @@ def graficas_mm1(lambda_, mu, tiempo_simulacion, corridas, n=3, tamaño_cola=10)
 
 
 # Ejemplo de uso
-graficas_mm1(1, 5, 1000, 100)
+graficas_mm1(1.25, 1, 1000, 300)
