@@ -4,7 +4,7 @@
 	         AnyLogic Project File
 *************************************************
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.9.2.202410172101" AlpVersion="8.9.2">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.9.2.202410172112" AlpVersion="8.9.2">
 <Model>
 	<Id>1729715022830</Id>
 	<Name><![CDATA[tpintegrador]]></Name>
@@ -2317,7 +2317,7 @@
 						<Parameter>
 							<Name><![CDATA[interarrivalTime]]></Name>
 							<Value Class="CodeUnitValue">
-								<Code><![CDATA[exponential( 3.9 )]]></Code>
+								<Code><![CDATA[exponential(0.300, 0)]]></Code>
 								<Unit Class="TimeUnits"><![CDATA[MINUTE]]></Unit>
 							</Value>
 						</Parameter>
@@ -17704,14 +17704,14 @@ enter.take(auto);]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
 					</RecurrenceCode>
 					<EmbeddedIcon>false</EmbeddedIcon>
-					<Width>260</Width>
+					<Width>320</Width>
 					<Height>240</Height>
 					<BackgroundColor/>
 					<BorderColor/>
 					<ChartArea>
 						<XOffset>50</XOffset>
 						<YOffset>20</YOffset>
-						<Width>180</Width>
+						<Width>240</Width>
 						<Height>130</Height>
 						<BackgroundColor>-1</BackgroundColor>
 						<BorderColor>-16777216</BorderColor>
@@ -17729,22 +17729,22 @@ enter.take(auto);]]></Code>
 					</Labels>
 					<ShowLegend>true</ShowLegend>
 					<DataItem>
+					<Id>1734029751462</Id>
+					<Expression><![CDATA[psicoEnd.dataset.getYMean()/60]]></Expression>
+					<Color>-14774017</Color>
+						<Title><![CDATA[Tiempo promedio psicofisico (minutos)]]></Title>
+					</DataItem>
+					<DataItem>
 					<Id>1732158052524</Id>
-					<Expression><![CDATA[teoricoEnd.dataset.getYMean()]]></Expression>
+					<Expression><![CDATA[teoricoEnd.dataset.getYMean()/60]]></Expression>
 					<Color>-65536</Color>
-						<Title><![CDATA[Tiempo promedio teorico]]></Title>
+						<Title><![CDATA[Tiempo promedio teorico (minutos)]]></Title>
 					</DataItem>
 					<DataItem>
 					<Id>1734004133231</Id>
-					<Expression><![CDATA[practicoEnd.dataset.getYMean()]]></Expression>
+					<Expression><![CDATA[practicoEnd.dataset.getYMean()/60]]></Expression>
 					<Color>-6632142</Color>
-						<Title><![CDATA[Tiempo promedio practico (servidor)]]></Title>
-					</DataItem>
-					<DataItem>
-					<Id>1732158053443</Id>
-					<Expression><![CDATA[practicoTimesCircuito.mean()]]></Expression>
-					<Color>-10496</Color>
-						<Title><![CDATA[Tiempo promedio practico (ruta auto)]]></Title>
+						<Title><![CDATA[Tiempo promedio practico (minutos)]]></Title>
 					</DataItem>
 					<ScaleFromExpression><![CDATA[0]]></ScaleFromExpression>
 					<ScaleToExpression><![CDATA[1]]></ScaleToExpression>
