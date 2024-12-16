@@ -23,12 +23,18 @@
 			<DestroyCode><![CDATA[insertInto( results ).columns( 
 	results.psico_promedio,
 	results.teorico_promedio,
-	results.practico_promedio
+	results.practico_promedio,
+	results.psico_utilizacion,
+	results.teorico_utilizacion,
+	results.practico_utilizacion
 )
 .values( 
 	psicoEnd.dataset.getYMean()/60,
 	teoricoEnd.dataset.getYMean()/60,
-	practicoEnd.dataset.getYMean()/60	
+	practicoEnd.dataset.getYMean()/60,
+	consultorios.utilization(),
+	computadoras.utilization(),
+	agentes.utilization()
 ).execute();]]></DestroyCode>
 			<Generic>false</Generic>
 			<GenericParameter>
